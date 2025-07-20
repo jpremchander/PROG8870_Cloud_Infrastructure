@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 Instance with Security Group allowing SSH access
+
+Parameters:
+  VPCId:
+    Type: String
+    Description: VPC ID where EC2 will be launched
+  SubnetId:
+    Type: String
+    Description: Subnet ID for EC2 instance
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: EC2 instance type
+  AMI:
+    Type: String
+    Description: AMI ID for EC2 instance
+
+Resources:
+  EC2SecurityGroupPROG8870:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH access
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: EC2SecurityGroup-PROG8870
+
+  EC2InstancePROG8870:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AMI
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !Ref SubnetId
+          GroupSet:
+            - !Ref EC2SecurityGroupPROG8870
+      Tags:
+        - Key: Name
+          Value: EC2Instance-PROG8870
+
+Outputs:
+  EC2InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref EC2InstancePROG8870
+  EC2PublicIP:
+    Description: EC2 Instance Public IP
+    Value: !GetAtt EC2InstancePROG8870.PublicIp

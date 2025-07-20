@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Networking infrastructure with VPC, Subnet, Internet Gateway, and Route Table
+
+Resources:
+  VPCPROG8870:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: Assignment3-VPC-PROG8870
+
+  SubnetPROG8870:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: VPCPROG8870
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: us-east-1a
+      Tags:
+        - Key: Name
+          Value: Assignment3-Subnet-PROG8870
+
+  IGWPROG8870:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Assignment3-IGW-PROG8870
+
+  AttachIGWPROG8870:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: VPCPROG8870
+      InternetGatewayId:
+        Ref: IGWPROG8870
+
+  RouteTablePROG8870:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: VPCPROG8870
+      Tags:
+        - Key: Name
+          Value: Assignment3-RouteTable-PROG8870
+
+  PublicRoutePROG8870:
+    Type: AWS::EC2::Route
+    DependsOn: AttachIGWPROG8870
+    Properties:
+      RouteTableId:
+        Ref: RouteTablePROG8870
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: IGWPROG8870
+
+  RouteTableAssociationPROG8870:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: SubnetPROG8870
+      RouteTableId:
+        Ref: RouteTablePROG8870
+
+Outputs:
+  VPCId:
+    Value:
+      Ref: VPCPROG8870
+  SubnetId:
+    Value:
+      Ref: SubnetPROG8870
