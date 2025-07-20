@@ -1,74 +1,93 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Networking infrastructure with VPC, Subnet, Internet Gateway, and Route Table
+Description: 'Networking infrastructure for Assignment 3 - Student ID: 9015480'
+
+Parameters:
+  VpcCidr:
+    Description: 'CIDR block for the VPC (Student ID: 9015480)'
+    Type: String
+    Default: '10.90.15.0/24'
+
+  PublicSubnetCidr:
+    Description: 'CIDR block for the public subnet (Student ID: 9015480)'
+    Type: String
+    Default: '10.90.15.0/28'
 
 Resources:
-  VPCPROG8870:
-    Type: AWS::EC2::VPC
+  VPC:
+    Type: 'AWS::EC2::VPC'
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: !Ref VpcCidr
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: Assignment3-VPC-PROG8870
+          Value: 'Assignment3-VPC-9015480'
+        - Key: StudentID
+          Value: '9015480'
 
-  SubnetPROG8870:
-    Type: AWS::EC2::Subnet
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
     Properties:
-      VpcId: VPCPROG8870
-      CidrBlock: 10.0.1.0/24
+      Tags:
+        - Key: Name
+          Value: 'Assignment3-IGW-9015480'
+        - Key: StudentID
+          Value: '9015480'
+
+  VPCGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCidr
+      AvailabilityZone: 'us-east-1a'
       MapPublicIpOnLaunch: true
-      AvailabilityZone: us-east-1a
       Tags:
         - Key: Name
-          Value: Assignment3-Subnet-PROG8870
+          Value: 'Assignment3-PublicSubnet-9015480'
+        - Key: StudentID
+          Value: '9015480'
 
-  IGWPROG8870:
-    Type: AWS::EC2::InternetGateway
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
     Properties:
+      VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: Assignment3-IGW-PROG8870
+          Value: 'Assignment3-PublicRT-9015480'
+        - Key: StudentID
+          Value: '9015480'
 
-  AttachIGWPROG8870:
-    Type: AWS::EC2::VPCGatewayAttachment
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
     Properties:
-      VpcId:
-        Ref: VPCPROG8870
-      InternetGatewayId:
-        Ref: IGWPROG8870
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref InternetGateway
+    
 
-  RouteTablePROG8870:
-    Type: AWS::EC2::RouteTable
+  PublicSubnetRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
-      VpcId:
-        Ref: VPCPROG8870
-      Tags:
-        - Key: Name
-          Value: Assignment3-RouteTable-PROG8870
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  PublicRoutePROG8870:
-    Type: AWS::EC2::Route
-    DependsOn: AttachIGWPROG8870
-    Properties:
-      RouteTableId:
-        Ref: RouteTablePROG8870
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId:
-        Ref: IGWPROG8870
-
-  RouteTableAssociationPROG8870:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId:
-        Ref: SubnetPROG8870
-      RouteTableId:
-        Ref: RouteTablePROG8870
 
 Outputs:
-  VPCId:
-    Value:
-      Ref: VPCPROG8870
-  SubnetId:
-    Value:
-      Ref: SubnetPROG8870
+  VpcId:
+    Description: 'VPC ID for Student 9015480'
+    Value: !Ref VPC
+    Export:
+      Name: 'Assignment3-VPC-ID-9015480'
+
+  PublicSubnetId:
+    Description: 'Public Subnet ID for Student 9015480'
+    Value: !Ref PublicSubnet
+    Export:
+      Name: 'Assignment3-PublicSubnet-ID-9015480'
