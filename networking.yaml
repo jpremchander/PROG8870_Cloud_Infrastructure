@@ -1,16 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Networking infrastructure for Assignment 3 - Student ID: 9015480'
+Description: 'Networking infrastructure for Assignment 3 - VPC, Subnets, Route Tables'
 
 Parameters:
   VpcCidr:
-    Description: 'CIDR block for the VPC (Student ID: 9015480)'
+    Description: 'CIDR block for the VPC'
     Type: String
-    Default: '10.90.15.0/24'
+    Default: '10.0.0.0/16'
 
   PublicSubnetCidr:
-    Description: 'CIDR block for the public subnet (Student ID: 9015480)'
+    Description: 'CIDR block for the public subnet'
     Type: String
-    Default: '10.90.15.0/28'
+    Default: '10.0.1.0/24'
 
 Resources:
   VPC:
@@ -21,25 +21,20 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: 'Assignment3-VPC-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-VPC'
 
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties:
       Tags:
         - Key: Name
-          Value: 'Assignment3-IGW-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-IGW'
 
   VPCGatewayAttachment:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-
 
   PublicSubnet:
     Type: 'AWS::EC2::Subnet'
@@ -50,9 +45,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: 'Assignment3-PublicSubnet-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-PublicSubnet'
 
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
@@ -60,17 +53,15 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: 'Assignment3-PublicRT-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-PublicRouteTable'
 
   PublicRoute:
     Type: 'AWS::EC2::Route'
+    DependsOn: VPCGatewayAttachment
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref InternetGateway
-    
 
   PublicSubnetRouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
@@ -78,16 +69,15 @@ Resources:
       SubnetId: !Ref PublicSubnet
       RouteTableId: !Ref PublicRouteTable
 
-
 Outputs:
   VpcId:
-    Description: 'VPC ID for Student 9015480'
+    Description: 'VPC ID'
     Value: !Ref VPC
     Export:
-      Name: 'Assignment3-VPC-ID-9015480'
+      Name: 'Assignment3-VPC-ID'
 
   PublicSubnetId:
-    Description: 'Public Subnet ID for Student 9015480'
+    Description: 'Public Subnet ID'
     Value: !Ref PublicSubnet
     Export:
-      Name: 'Assignment3-PublicSubnet-ID-9015480'
+      Name: 'Assignment3-PublicSubnet-ID'

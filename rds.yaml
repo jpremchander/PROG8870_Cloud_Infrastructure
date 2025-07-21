@@ -1,39 +1,41 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'RDS MySQL Instance with Auto-Generated Credentials - Student ID: 9015480'
+Description: 'RDS MySQL Instance for Assignment 3'
 
 Parameters:
   DBInstanceIdentifier:
-    Description: 'Database instance identifier for Student 9015480'
+    Description: 'The DB instance identifier'
     Type: String
-    Default: 'assignment3-db-9015480'
+    Default: 'assignment3-db'
 
   DBName:
-    Description: 'Initial database name for Student 9015480'
+    Description: 'The database name'
     Type: String
     Default: 'assignment3'
-    MinLength: 1
-    MaxLength: 64
+
+  DBInstanceClass:
+    Description: 'The database instance type'
+    Type: String
+    Default: 'db.t3.micro'
+
+  DBUsername:
+    Description: 'The database admin username'
+    Type: String
+    Default: 'admin'
+
+  DBPassword:
+    Description: 'The database admin password'
+    Type: String
+    NoEcho: true
+    MinLength: 8
+    MaxLength: 41
 
 Resources:
-  RDSCredentials:
-    Type: 'AWS::SecretsManager::Secret'
-    Properties:
-      Name: 'rds-credentials-9015480'
-      Description: 'Auto-generated RDS credentials for Student 9015480'
-      GenerateSecretString:
-        SecretStringTemplate: '{"username": "dbadmin9015480"}'
-        GenerateStringKey: 'password'
-        PasswordLength: 16
-        ExcludeCharacters: '"@/\'
-        IncludeSpace: false
-        RequireEachIncludedType: true
-
   RDSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: 'Security Group for RDS MySQL - Student 9015480'
+      GroupDescription: 'Security group for RDS MySQL instance'
       VpcId:
-        Fn::ImportValue: 'Assignment3-VPC-ID-9015480'
+        Fn::ImportValue: 'Assignment3-VPC-ID'
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3306
@@ -41,54 +43,46 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: 'Assignment3-RDS-SG-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-RDS-SG'
 
   DBSubnetGroup:
     Type: 'AWS::RDS::DBSubnetGroup'
     Properties:
-      DBSubnetGroupDescription: 'Subnet group for RDS - Student 9015480'
+      DBSubnetGroupDescription: 'Subnet group for RDS instance'
       SubnetIds:
-        - Fn::ImportValue: 'Assignment3-PublicSubnet-ID-9015480'
+        - Fn::ImportValue: 'Assignment3-PublicSubnet-ID'
       Tags:
         - Key: Name
-          Value: 'Assignment3-DB-Subnet-Group-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-DB-Subnet-Group'
 
   RDSInstance:
     Type: 'AWS::RDS::DBInstance'
     Properties:
       DBInstanceIdentifier: !Ref DBInstanceIdentifier
       DBName: !Ref DBName
-      AllocatedStorage: '20'
-      DBInstanceClass: 'db.t2.micro'
-      Engine: 'mysql'
-      EngineVersion: '5.7'
-      MasterUsername: !GetAtt RDSCredentials.SecretValueFromJson.username
-      MasterUserPassword: !GetAtt RDSCredentials.SecretValueFromJson.password
+      Engine: mysql
+      EngineVersion: '8.0'
+      DBInstanceClass: !Ref DBInstanceClass
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      AllocatedStorage: 20
+      StorageType: gp2
+      PubliclyAccessible: true
       VPCSecurityGroups:
         - !GetAtt RDSSecurityGroup.GroupId
       DBSubnetGroupName: !Ref DBSubnetGroup
-      PubliclyAccessible: true
       MultiAZ: false
-      StorageType: 'gp2'
       Tags:
         - Key: Name
-          Value: 'Assignment3-RDS-9015480'
-        - Key: StudentID
-          Value: '9015480'
+          Value: 'Assignment3-RDS'
 
 Outputs:
-  DBEndpoint:
-    Description: 'RDS Endpoint for Student 9015480'
+  RDSEndpoint:
+    Description: 'Endpoint for the RDS instance'
     Value: !GetAtt RDSInstance.Endpoint.Address
 
-  DBPort:
-    Description: 'RDS Port for Student 9015480'
-    Value: !GetAtt RDSInstance.Endpoint.Port
-
-  DBSecretARN:
-    Description: 'Secrets Manager ARN for credentials'
-    Value: !Ref RDSCredentials
+  RDSSecurityGroupId:
+    Description: 'Security Group ID for the RDS instance'
+    Value: !Ref RDSSecurityGroup
+    Export:
+      Name: 'Assignment3-RDS-SG-ID'
