@@ -1,88 +1,55 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'RDS MySQL Instance for Assignment 3'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Assignment 3 - RDS MySQL Instance"
 
 Parameters:
-  DBInstanceIdentifier:
-    Description: 'The DB instance identifier'
-    Type: String
-    Default: 'assignment3-db'
-
-  DBName:
-    Description: 'The database name'
-    Type: String
-    Default: 'assignment3'
-
-  DBInstanceClass:
-    Description: 'The database instance type'
-    Type: String
-    Default: 'db.t3.micro'
-
   DBUsername:
-    Description: 'The database admin username'
-    Type: String
-    Default: 'admin'
-
-  DBPassword:
-    Description: 'The database admin password'
     Type: String
     NoEcho: true
-    MinLength: 8
-    MaxLength: 41
+  DBPassword:
+    Type: String
+    NoEcho: true
 
 Resources:
-  RDSSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+  Assignment3RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: 'Security group for RDS MySQL instance'
-      VpcId:
-        Fn::ImportValue: 'Assignment3-VPC-ID'
+      GroupDescription: Allow MySQL traffic
+      VpcId: !ImportValue Assignment3-VPC-ID
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
           CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: 'Assignment3-RDS-SG'
 
-  DBSubnetGroup:
-    Type: 'AWS::RDS::DBSubnetGroup'
+  Assignment3RDSSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: 'Subnet group for RDS instance'
+      DBSubnetGroupDescription: "RDS subnet group for assignment3"
       SubnetIds:
-        - Fn::ImportValue: 'Assignment3-PublicSubnet-ID'
-      Tags:
-        - Key: Name
-          Value: 'Assignment3-DB-Subnet-Group'
+        - !ImportValue Assignment3-Subnet1-ID
+        - !ImportValue Assignment3-Subnet2-ID
+      DBSubnetGroupName: assignment3-subnet-group
 
-  RDSInstance:
-    Type: 'AWS::RDS::DBInstance'
+  Assignment3RDSInstance:
+    Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Ref DBInstanceIdentifier
-      DBName: !Ref DBName
+      DBInstanceIdentifier: assignment3-db
+      DBName: assignment3
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
       Engine: mysql
-      EngineVersion: '8.0'
-      DBInstanceClass: !Ref DBInstanceClass
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
-      AllocatedStorage: 20
-      StorageType: gp2
-      PubliclyAccessible: true
       VPCSecurityGroups:
-        - !GetAtt RDSSecurityGroup.GroupId
-      DBSubnetGroupName: !Ref DBSubnetGroup
-      MultiAZ: false
+        - !Ref Assignment3RDSSecurityGroup
+      DBSubnetGroupName: !Ref Assignment3RDSSubnetGroup
+      PubliclyAccessible: true
+      BackupRetentionPeriod: 0
       Tags:
         - Key: Name
-          Value: 'Assignment3-RDS'
+          Value: assignment3
 
 Outputs:
   RDSEndpoint:
-    Description: 'Endpoint for the RDS instance'
-    Value: !GetAtt RDSInstance.Endpoint.Address
-
-  RDSSecurityGroupId:
-    Description: 'Security Group ID for the RDS instance'
-    Value: !Ref RDSSecurityGroup
-    Export:
-      Name: 'Assignment3-RDS-SG-ID'
+    Description: RDS endpoint
+    Value: !GetAtt Assignment3RDSInstance.Endpoint.Address

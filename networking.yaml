@@ -1,83 +1,91 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Networking infrastructure for Assignment 3 - VPC, Subnets, Route Tables'
-
-Parameters:
-  VpcCidr:
-    Description: 'CIDR block for the VPC'
-    Type: String
-    Default: '10.0.0.0/16'
-
-  PublicSubnetCidr:
-    Description: 'CIDR block for the public subnet'
-    Type: String
-    Default: '10.0.1.0/24'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Assignment 3 - Networking Infrastructure with Two Subnets"
 
 Resources:
-  VPC:
-    Type: 'AWS::EC2::VPC'
+  Assignment3VPC:
+    Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCidr
+      CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: 'Assignment3-VPC'
+          Value: assignment3
 
-  InternetGateway:
-    Type: 'AWS::EC2::InternetGateway'
+  Assignment3Subnet1:
+    Type: AWS::EC2::Subnet
     Properties:
-      Tags:
-        - Key: Name
-          Value: 'Assignment3-IGW'
-
-  VPCGatewayAttachment:
-    Type: 'AWS::EC2::VPCGatewayAttachment'
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-
-  PublicSubnet:
-    Type: 'AWS::EC2::Subnet'
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !Ref PublicSubnetCidr
-      AvailabilityZone: 'us-east-1a'
+      VpcId: !Ref Assignment3VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: us-east-1a
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: 'Assignment3-PublicSubnet'
+          Value: assignment3-subnet-a
 
-  PublicRouteTable:
-    Type: 'AWS::EC2::RouteTable'
+  Assignment3Subnet2:
+    Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !Ref Assignment3VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: 'Assignment3-PublicRouteTable'
+          Value: assignment3-subnet-b
 
-  PublicRoute:
-    Type: 'AWS::EC2::Route'
-    DependsOn: VPCGatewayAttachment
+  Assignment3InternetGateway:
+    Type: AWS::EC2::InternetGateway
     Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref InternetGateway
+      Tags:
+        - Key: Name
+          Value: assignment3
 
-  PublicSubnetRouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+  AttachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      SubnetId: !Ref PublicSubnet
-      RouteTableId: !Ref PublicRouteTable
+      VpcId: !Ref Assignment3VPC
+      InternetGatewayId: !Ref Assignment3InternetGateway
+
+  Assignment3RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Assignment3VPC
+      Tags:
+        - Key: Name
+          Value: assignment3
+
+  Assignment3Route:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref Assignment3RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref Assignment3InternetGateway
+
+  SubnetRouteTableAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Assignment3Subnet1
+      RouteTableId: !Ref Assignment3RouteTable
+
+  SubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Assignment3Subnet2
+      RouteTableId: !Ref Assignment3RouteTable
 
 Outputs:
-  VpcId:
-    Description: 'VPC ID'
-    Value: !Ref VPC
+  VPCId:
+    Value: !Ref Assignment3VPC
     Export:
-      Name: 'Assignment3-VPC-ID'
+      Name: Assignment3-VPC-ID
 
-  PublicSubnetId:
-    Description: 'Public Subnet ID'
-    Value: !Ref PublicSubnet
+  Subnet1Id:
+    Value: !Ref Assignment3Subnet1
     Export:
-      Name: 'Assignment3-PublicSubnet-ID'
+      Name: Assignment3-Subnet1-ID
+
+  Subnet2Id:
+    Value: !Ref Assignment3Subnet2
+    Export:
+      Name: Assignment3-Subnet2-ID

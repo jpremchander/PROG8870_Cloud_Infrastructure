@@ -1,66 +1,44 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'EC2 Instance for Assignment 3'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Assignment 3 - EC2 Instance"
 
 Parameters:
-  InstanceType:
-    Description: 'EC2 instance type'
-    Type: String
-    Default: 't2.micro'
-
-  KeyName:
-    Description: 'Name of an existing EC2 KeyPair to enable SSH access'
-    Type: 'AWS::EC2::KeyPair::prog8870-key'
-    ConstraintDescription: 'Must be the name of an existing EC2 KeyPair.'
-
   AMIId:
-    Description: 'AMI ID for the EC2 instance'
-    Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0150ccaf51ab55a51' # Amazon Linux 2023 in us-east-1
+    Type: String
+  InstanceType:
+    Type: String
+    Default: t2.micro
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
 
 Resources:
-  EC2SecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+  Assignment3SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: 'Enable SSH access'
-      VpcId:
-        Fn::ImportValue: 'Assignment3-VPC-ID'
+      GroupDescription: Allow SSH access
+      VpcId: !ImportValue Assignment3-VPC-ID
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: 'Assignment3-EC2-SG'
 
-  EC2Instance:
-    Type: 'AWS::EC2::Instance'
+  Assignment3EC2Instance:
+    Type: AWS::EC2::Instance
     Properties:
-      InstanceType: !Ref InstanceType
       ImageId: !Ref AMIId
+      InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
+          SubnetId: !ImportValue Assignment3-Subnet1-ID
           GroupSet:
-            - !Ref EC2SecurityGroup
-          SubnetId:
-            Fn::ImportValue: 'Assignment3-PublicSubnet-ID'
+            - !Ref Assignment3SecurityGroup
       Tags:
         - Key: Name
-          Value: 'Assignment3-EC2'
+          Value: assignment3
 
 Outputs:
-  InstanceId:
-    Description: 'Instance ID of the newly created EC2 instance'
-    Value: !Ref EC2Instance
-
-  PublicIP:
-    Description: 'Public IP address of the newly created EC2 instance'
-    Value: !GetAtt EC2Instance.PublicIp
-
-  SecurityGroupId:
-    Description: 'Security Group ID for the EC2 instance'
-    Value: !Ref EC2SecurityGroup
-    Export:
-      Name: 'Assignment3-EC2-SG-ID'
+  EC2PublicIP:
+    Value: !GetAtt Assignment3EC2Instance.PublicIp
+    Description: Public IP of the EC2 instance
