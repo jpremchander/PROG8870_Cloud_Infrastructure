@@ -17,5 +17,5 @@ instance_type       = "t2.micro"
 key_name            = "PROG8870-KEY"
 
 db_name             = "prog8870db"
-db_username         = "admin"
-db_password         = "StrongPass123!"
+db_username         = "dbadmin"
+db_password         = "StrongPass2K25"
