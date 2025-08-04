@@ -1,0 +1,92 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation template for creating S3 buckets with PublicAccessBlockConfiguration.",
+  "Resources": {
+    "S3Bucket1": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-private-s3-bucket-1",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    },
+    "S3Bucket2": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-private-s3-bucket-2",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    },
+    "S3Bucket3": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-private-s3-bucket-3",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    },
+    "S3Bucket4": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-private-s3-bucket-4",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "S3Bucket1Output": {
+      "Value": {
+        "Ref": "S3Bucket1"
+      },
+      "Description": "The name of the first S3 bucket."
+    },
+    "S3Bucket2Output": {
+      "Value": {
+        "Ref": "S3Bucket2"
+      },
+      "Description": "The name of the second S3 bucket."
+    },
+    "S3Bucket3Output": {
+      "Value": {
+        "Ref": "S3Bucket3"
+      },
+      "Description": "The name of the third S3 bucket."
+    },
+    "S3Bucket4Output": {
+      "Value": {
+        "Ref": "S3Bucket4"
+      },
+      "Description": "The name of the fourth S3 bucket."
+    }
+  }
+}

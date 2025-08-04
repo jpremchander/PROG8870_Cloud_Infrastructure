@@ -1,0 +1,33 @@
+{
+  "DBInstanceClass": {
+    "Type": "String",
+    "Default": "db.t3.micro",
+    "Description": "The compute and memory capacity of the DB instance."
+  },
+  "DBName": {
+    "Type": "String",
+    "Default": "mydatabase",
+    "Description": "The name of the database to create when the DB instance is created."
+  },
+  "DBUsername": {
+    "Type": "String",
+    "Description": "The master username for the database."
+  },
+  "DBPassword": {
+    "Type": "String",
+    "Description": "The master password for the database."
+  },
+  "AllocatedStorage": {
+    "Type": "Number",
+    "Default": "20",
+    "Description": "The size of the database (GB)."
+  },
+  "VPCSecurityGroupId": {
+    "Type": "AWS::EC2::SecurityGroup::Id",
+    "Description": "The security group for the RDS instance."
+  },
+  "DBSubnetGroup": {
+    "Type": "String",
+    "Description": "The DB subnet group for the RDS instance."
+  }
+}

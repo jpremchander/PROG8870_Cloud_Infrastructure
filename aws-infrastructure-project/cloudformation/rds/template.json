@@ -1,0 +1,96 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation Template for RDS Instance",
+  "Parameters": {
+    "DBInstanceIdentifier": {
+      "Type": "String",
+      "Description": "The DB instance identifier"
+    },
+    "DBName": {
+      "Type": "String",
+      "Description": "The name of the database to create"
+    },
+    "DBUsername": {
+      "Type": "String",
+      "Description": "The database admin account username"
+    },
+    "DBPassword": {
+      "Type": "String",
+      "NoEcho": true,
+      "Description": "The database admin account password"
+    },
+    "DBInstanceClass": {
+      "Type": "String",
+      "Default": "db.t3.micro",
+      "Description": "The compute and memory capacity of the DB instance"
+    },
+    "AllocatedStorage": {
+      "Type": "Number",
+      "Default": "20",
+      "Description": "The size of the database (GB)"
+    }
+  },
+  "Resources": {
+    "MyRDSInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBInstanceIdentifier": {
+          "Ref": "DBInstanceIdentifier"
+        },
+        "DBName": {
+          "Ref": "DBName"
+        },
+        "MasterUsername": {
+          "Ref": "DBUsername"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "DBInstanceClass": {
+          "Ref": "DBInstanceClass"
+        },
+        "AllocatedStorage": {
+          "Ref": "AllocatedStorage"
+        },
+        "Engine": "mysql",
+        "PubliclyAccessible": true,
+        "VPCSecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "MyRDSSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ]
+      }
+    },
+    "MyRDSSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable MySQL access",
+        "VpcId": {
+          "Ref": "VPCId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "DBInstanceEndpoint": {
+      "Description": "The endpoint of the RDS instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "MyRDSInstance",
+          "Endpoint.Address"
+        ]
+      }
+    }
+  }
+}

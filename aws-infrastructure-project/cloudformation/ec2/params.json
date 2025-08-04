@@ -1,0 +1,27 @@
+{
+  "InstanceType": {
+    "Type": "String",
+    "Default": "t2.micro",
+    "Description": "EC2 instance type"
+  },
+  "KeyName": {
+    "Type": "AWS::EC2::KeyPair::KeyName",
+    "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+  },
+  "AMI": {
+    "Type": "String",
+    "Description": "The AMI ID for the EC2 instance"
+  },
+  "VPCId": {
+    "Type": "AWS::EC2::VPC::Id",
+    "Description": "The VPC ID where the EC2 instance will be deployed"
+  },
+  "SubnetId": {
+    "Type": "AWS::EC2::Subnet::Id",
+    "Description": "The Subnet ID where the EC2 instance will be deployed"
+  },
+  "SecurityGroup": {
+    "Type": "AWS::EC2::SecurityGroup::Id",
+    "Description": "The security group ID to associate with the EC2 instance"
+  }
+}

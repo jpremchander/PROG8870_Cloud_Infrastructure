@@ -1,0 +1,23 @@
+{
+  "S3Bucket1": {
+    "Type": "String",
+    "Description": "The name of the first S3 bucket."
+  },
+  "S3Bucket2": {
+    "Type": "String",
+    "Description": "The name of the second S3 bucket."
+  },
+  "S3Bucket3": {
+    "Type": "String",
+    "Description": "The name of the third S3 bucket."
+  },
+  "S3Bucket4": {
+    "Type": "String",
+    "Description": "The name of the fourth S3 bucket."
+  },
+  "VersioningEnabled": {
+    "Type": "String",
+    "Default": "true",
+    "Description": "Enable versioning on the S3 buckets."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "VpcName": {
+    "Type": "String",
+    "Description": "The name of the VPC."
+  },
+  "CidrBlock": {
+    "Type": "String",
+    "Description": "The CIDR block for the VPC."
+  },
+  "EnableDnsSupport": {
+    "Type": "String",
+    "Description": "Enable DNS support in the VPC.",
+    "Default": "true"
+  },
+  "EnableDnsHostnames": {
+    "Type": "String",
+    "Description": "Enable DNS hostnames in the VPC.",
+    "Default": "true"
+  }
+}
